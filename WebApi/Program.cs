@@ -7,17 +7,37 @@ using WebApi.Infrastructure.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder =>
-  optionsBuilder
-    .UseCosmos(
-      connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-      databaseName: "product-store",
-      cosmosOptionsAction: options =>
-      {
-          options.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Direct);
-          options.MaxRequestsPerTcpConnection(16);
-          options.MaxTcpConnectionsPerEndpoint(32);
-      }));
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder =>
+      optionsBuilder
+        .UseCosmos(
+          connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+          databaseName: "product-store",
+          cosmosOptionsAction: options =>
+          {
+              options.HttpClientFactory(() =>
+              {
+                  HttpMessageHandler httpMessageHandler = new HttpClientHandler()
+                  {
+                      ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                  };
+
+                  return new HttpClient(httpMessageHandler);
+              });
+              options.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
+          }));
+else
+    builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder =>
+      optionsBuilder
+        .UseCosmos(
+          connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+          databaseName: "product-store",
+          cosmosOptionsAction: options =>
+          {
+              options.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Direct);
+              options.MaxRequestsPerTcpConnection(16);
+              options.MaxTcpConnectionsPerEndpoint(32);
+          }));
 
 builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

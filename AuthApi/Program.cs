@@ -1,6 +1,6 @@
 
 using AspNetCore.Identity.CosmosDb.Extensions;
-using Domain.DataContext;
+using AuthApi.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
@@ -13,28 +13,19 @@ namespace AuthApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            //Setup Cosmos DB
 
-            builder.Services.AddDbContextFactory<AuthDbContext>(optionsBuilder =>
-              optionsBuilder
-                .UseCosmos(
-                  connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-                  databaseName: "identity-db",
-                  cosmosOptionsAction: options =>
-                  {
-                      options.HttpClientFactory(() => new HttpClient(new HttpClientHandler()
-                      {
-                          ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                      }));
-                      options.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
-                      options.MaxRequestsPerTcpConnection(16);
-                      options.MaxTcpConnectionsPerEndpoint(32);
-                  }));
+            //SeedCosmosDb(builder);
 
-            builder.Services.AddCosmosIdentity<AuthDbContext, IdentityUser, IdentityRole, string>(
-                  options => options.SignIn.RequireConfirmedAccount = true)
-                .AddDefaultUI() // Use this if Identity Scaffolding is in use
-                .AddDefaultTokenProviders();
+            // Add services to the container. Register the DbContext with Cosmos DB
+            builder.Services.AddDbContext<AuthDbContext>(options =>
+                options.UseSqlServer(connectionString: builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register Identity with Cosmos DB
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                    .AddDefaultUI() // Use this if Identity Scaffolding is in use
+                    .AddEntityFrameworkStores<AuthDbContext>()
+                    .AddDefaultTokenProviders();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -53,13 +44,25 @@ namespace AuthApi
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
+            ApplyMigrations(builder);
+
             app.Run();
+        }
+
+        public static void ApplyMigrations(WebApplicationBuilder webApplicationBuilder)
+        {
+            using (var scope = webApplicationBuilder.Services.BuildServiceProvider().CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+                if (dbContext.Database.GetPendingMigrations().Any())
+                {
+                    dbContext.Database.Migrate();
+                }
+            }
         }
     }
 }

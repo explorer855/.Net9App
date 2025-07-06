@@ -15,28 +15,13 @@ namespace WebApi.Infrastructure.ExceptionHandling
         {
             logger.LogError(exception.InnerException?.Message);
 
-            switch (exception)
+            httpContext.Response.StatusCode = exception switch
             {
-                case NotImplementedException _:
-                    httpContext.Response.StatusCode = StatusCodes.Status501NotImplemented;
-                    break;
-
-                case NotSupportedException _:
-                    httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                    break;
-
-                case InvalidOperationException _:
-                case DbUpdateConcurrencyException _:
-                case CryptographicException _:
-                case DbUpdateException _:
-                    httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
-                    break;
-
-                default:
-                    httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    break;
-            }
-
+                NotImplementedException _ => StatusCodes.Status501NotImplemented,
+                NotSupportedException _ => StatusCodes.Status404NotFound,
+                InvalidOperationException _ or DbUpdateConcurrencyException _ or CryptographicException _ or DbUpdateException _ => StatusCodes.Status409Conflict,
+                _ => StatusCodes.Status500InternalServerError,
+            };
             var problemDetails = new ProblemDetails
             {
                 Title = "An exception occurred!!",
