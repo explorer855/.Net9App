@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthApi.Data.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuthApi.Controllers
 {
@@ -12,8 +13,8 @@ namespace AuthApi.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddProducts()
+        [HttpGet]
+        public async Task<IActionResult> Login([FromRoute]UserLoginModel user)
         {
             return Ok();
         }

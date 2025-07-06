@@ -1,17 +1,18 @@
 ﻿using AspNetCore.Identity.CosmosDb;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Domain.DataContext
+namespace AuthApi.Data
 {
     /// <summary>
     /// Azure Cosmos DB Context
     /// for setting up Entities and its relationships
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class AuthDbContext : CosmosIdentityDbContext<IdentityUser, IdentityRole, string>
+    public class AuthDbContext : IdentityDbContext<IdentityUser>
     {
         public AuthDbContext(DbContextOptions options) : base(options) { 
         }
@@ -22,7 +23,7 @@ namespace Domain.DataContext
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAutoscaleThroughput(1000);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
