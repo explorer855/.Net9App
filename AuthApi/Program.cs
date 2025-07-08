@@ -1,7 +1,7 @@
 
 using AspNetCore.Identity.CosmosDb.Extensions;
 using AuthApi.Data;
-using AuthApi.Data.Models;
+using AuthApi.Models.Entities;
 using AuthApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
@@ -53,7 +53,7 @@ namespace AuthApi
             app.UseAuthorization();
             app.MapControllers();
 
-            //ApplyMigrations(builder);
+            ApplyMigrations(builder);
 
             app.Run();
         }

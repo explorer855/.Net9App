@@ -1,4 +1,4 @@
-﻿using AuthApi.Data.Models;
+﻿using AuthApi.Models.Dtos;
 using AuthApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +14,21 @@ namespace AuthApi.Controllers
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Login([FromRoute]UserLoginModel user)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest user)
         {
-            return Ok();
+            if (user is null)
+            {
+                return BadRequest("Login details cannot be null.");
+            }
+
+            var response = await _authService.LoginAsync(user);
+            return Ok(response);
         }
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserModel registerUser)
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUser)
         {
             if (registerUser == null)
             {

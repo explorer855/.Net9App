@@ -1,8 +1,9 @@
-﻿namespace AuthApi.Data.Models
+﻿namespace AuthApi.Models.Dtos
 {
-    public class RegisterUserModel
+    public class RegisterUserRequest
     {
         public required string Email { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;

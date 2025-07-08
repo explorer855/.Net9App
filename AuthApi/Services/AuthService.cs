@@ -1,6 +1,8 @@
 ﻿using AuthApi.Data;
-using AuthApi.Data.Models;
+using AuthApi.Models.Dtos;
+using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Services
 {
@@ -17,15 +19,30 @@ namespace AuthApi.Services
         {
             _db = dbContext;
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-            _roleManager = roleManager;
+            _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
-        public Task<string> LoginAsync(UserLoginModel userLogin)
+        public async Task<string?> LoginAsync(UserLoginRequest userLogin)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var appUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName.ToLower() == userLogin.Username.ToLower());
+                var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
+
+                if (siginIn)
+                {
+                    return appUser.Id;
+                }
+                
+                return string.Empty;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
-        public async Task<string> RegisterAsync(RegisterUserModel registerUser)
+        public async Task<string?> RegisterAsync(RegisterUserRequest registerUser)
         {
             try
             {

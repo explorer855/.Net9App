@@ -1,5 +1,5 @@
 ﻿using AspNetCore.Identity.CosmosDb;
-using AuthApi.Data.Models;
+using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
