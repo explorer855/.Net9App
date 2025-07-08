@@ -1,16 +1,17 @@
 ﻿using AuthApi.Data.Models;
+using AuthApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-
-        public AuthController()
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
         [HttpGet]
@@ -18,5 +19,18 @@ namespace AuthApi.Controllers
         {
             return Ok();
         }
+
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterUserModel registerUser)
+        {
+            if (registerUser == null)
+            {
+                return BadRequest("Invalid user data.");
+            }
+            var result = await _authService.RegisterAsync(registerUser);
+            return Ok(result);
+        }
     }
+
 }
