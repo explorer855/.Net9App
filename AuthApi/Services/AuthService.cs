@@ -1,22 +1,68 @@
-﻿using AuthApi.Data.Models;
+﻿using AuthApi.Data;
+using AuthApi.Models.Dtos;
+using AuthApi.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Services
 {
     public class AuthService
         : IAuthService
     {
-        //private readonly identityuser
+        private readonly AuthDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthService() { }
-
-        public Task<string> LoginAsync(UserLoginModel userLogin)
+        public AuthService(AuthDbContext dbContext,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager) 
         {
-            throw new NotImplementedException();
+            _db = dbContext;
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
-        public Task<string> RegisterAsync(RegisterUserModel registerUser)
+        public async Task<string?> LoginAsync(UserLoginRequest userLogin)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var appUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName.ToLower() == userLogin.Username.ToLower());
+                var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
+
+                if (siginIn)
+                {
+                    return appUser.Id;
+                }
+                
+                return string.Empty;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<string?> RegisterAsync(RegisterUserRequest registerUser)
+        {
+            try
+            {
+               var response = await _userManager.CreateAsync(new ApplicationUser
+                {
+                    UserName = registerUser.Username,
+                    Email = registerUser.Email,
+                    PhoneNumber = registerUser.PhoneNumber,
+                    Name = registerUser.Username // Assuming Name is the same as Username for simplicity
+                }, registerUser.Password);
+
+                return response.Succeeded 
+                    ? "User registered successfully" 
+                    : string.Join(", ", response.Errors.Select(e => e.Description));    
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                throw new InvalidOperationException("An error occurred while registering the user.", ex);
+            }
         }
     }
 }

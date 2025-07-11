@@ -4,6 +4,10 @@ services:
     build:
       context: .
       dockerfile: AuthApi/Dockerfile
+    ports:
+    - "7000:8080"
+    networks:
+      - webapi_network
 
   webapi:
     image: ${DOCKER_REGISTRY-}webapi
@@ -12,3 +16,7 @@ services:
       dockerfile: WebApi/Dockerfile
     # depends_on: 'authApi'
 
+
+networks:
+  webapi_network:
+    driver: bridge
