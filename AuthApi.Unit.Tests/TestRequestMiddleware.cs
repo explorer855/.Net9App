@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
-using WebApi.Infrastructure.CultureMiddleware;
+using AuthApi.Infrastructure.CultureMiddleware;
 
-namespace webapi.unit.tests
+namespace AuthApi.Tests.Infrastructure
 {
     public class TestRequestMiddleware
     {

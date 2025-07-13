@@ -10,11 +10,12 @@ namespace AuthApi.Services
         /// <param name="registerUser">The user registration model.</param>
         /// <returns>A task that represents the asynchronous operation, containing the result of the registration.</returns>
         Task<string?> RegisterAsync(RegisterUserRequest registerUser);
+        
         /// <summary>
         /// Logs in a user with the provided email and password.
         /// </summary>
         /// <param name="userLogin">The user login model.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the authentication token.</returns>
-        Task<string?> LoginAsync(UserLoginRequest userLogin);
+        /// <returns>A task that represents the asynchronous operation, containing the User-Id & IsValid Login flag.</returns>
+        Task<(string?, bool)> LoginAsync(UserLoginRequest userLogin);
     }
 }

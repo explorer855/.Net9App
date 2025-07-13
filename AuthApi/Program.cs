@@ -1,14 +1,16 @@
-
-using AspNetCore.Identity.CosmosDb.Extensions;
 using AuthApi.Data;
+using AuthApi.Infrastructure.CultureMiddleware;
+using AuthApi.Infrastructure.ExceptionHandling;
 using AuthApi.Models.Entities;
 using AuthApi.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace AuthApi
 {
+    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)
@@ -17,7 +19,9 @@ namespace AuthApi
 
             //Setup Cosmos DB
 
-            //SeedCosmosDb(builder);
+            // Add Exception Handling Middleware
+
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
             // Add services to the container. Register the DbContext with Cosmos DB
             builder.Services.AddDbContext<AuthDbContext>(options =>
@@ -25,13 +29,17 @@ namespace AuthApi
 
             // Register Identity with Cosmos DB
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddDefaultUI() // Use this if Identity Scaffolding is in use
                     .AddEntityFrameworkStores<AuthDbContext>()
                     .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(opts =>
+                {
+                    opts.JsonSerializerOptions.MaxDepth= 64; // Set maximum depth for JSON serialization
+                    opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; // Preserve dictionary keys as they are defined
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -49,6 +57,7 @@ namespace AuthApi
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<RequestCultureMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

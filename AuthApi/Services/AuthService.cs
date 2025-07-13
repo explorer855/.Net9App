@@ -22,19 +22,19 @@ namespace AuthApi.Services
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
-        public async Task<string?> LoginAsync(UserLoginRequest userLogin)
+        public async Task<(string?, bool)> LoginAsync(UserLoginRequest userLogin)
         {
             try
             {
-                var appUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName.ToLower() == userLogin.Username.ToLower());
+                var appUser = await _db.ApplicationUsers.SingleOrDefaultAsync(u => u.UserName == userLogin.Username);
                 var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
 
                 if (siginIn)
                 {
-                    return appUser.Id;
+                    return (appUser.Id, true);
                 }
                 
-                return string.Empty;
+                return ("Incorrect Username/Password!", false);
             }
             catch
             {

@@ -23,7 +23,7 @@ namespace AuthApi.Controllers
             }
 
             var response = await _authService.LoginAsync(user);
-            return Ok(response);
+            return Ok(new AuthResponseDto { TResponse = response.Item1, Success = response.Item2 });
         }
 
 

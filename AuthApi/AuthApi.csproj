@@ -10,10 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\bikas\.nuget\packages\aspnetcore.identity.cosmosdb\9.0.1\contentFiles\any\net9.0\B2C_BrandIcon_Black.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.Identity.CosmosDb" />
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
