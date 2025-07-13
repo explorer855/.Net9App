@@ -2,10 +2,12 @@
 using AuthApi.Models.Dtos;
 using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Services
 {
+    /// <summary>
+    /// Class for handling authentication services.
+    /// </summary>
     public class AuthService
         : IAuthService
     {
@@ -22,19 +24,24 @@ namespace AuthApi.Services
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
-        public async Task<string?> LoginAsync(UserLoginRequest userLogin)
+        /// <summary>
+        /// Login a user with the provided credentials.
+        /// </summary>
+        /// <param name="userLogin"></param>
+        /// <returns></returns>
+        public async Task<(string?, bool)> LoginAsync(UserLoginRequest userLogin)
         {
             try
             {
-                var appUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName.ToLower() == userLogin.Username.ToLower());
+                var appUser = await _userManager.FindByNameAsync(userLogin.Username);
                 var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
 
                 if (siginIn)
                 {
-                    return appUser.Id;
+                    return (appUser.Id, true);
                 }
                 
-                return string.Empty;
+                return ("Incorrect Username/Password!", false);
             }
             catch
             {
@@ -42,6 +49,12 @@ namespace AuthApi.Services
             }
         }
 
+        /// <summary>
+        /// Register a new user with the provided details.
+        /// </summary>
+        /// <param name="registerUser"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<string?> RegisterAsync(RegisterUserRequest registerUser)
         {
             try

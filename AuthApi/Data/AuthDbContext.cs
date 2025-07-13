@@ -1,9 +1,6 @@
-﻿using AspNetCore.Identity.CosmosDb;
-using AuthApi.Models.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AuthApi.Data
@@ -17,7 +14,7 @@ namespace AuthApi.Data
     {
         public AuthDbContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         /// <summary>
         /// This method is used to configure the model and relationships
