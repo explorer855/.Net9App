@@ -9,6 +9,9 @@ using System.Text.Json;
 
 namespace AuthApi.Tests.Infrastructure
 {
+    /// <summary>
+    /// Global Exception Handler Tests
+    /// </summary>
     public class GlobalExceptionHandlerTests
     {
         private readonly Mock<ILogger<GlobalExceptionHandler>> _loggerMock;

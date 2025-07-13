@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace AuthApi.Unit.Tests.Services;
+
+/// <summary>
+/// AuthService unit tests
+/// </summary>
 public class AuthServiceTests
 {
     private readonly Mock<AuthDbContext> _dbContextMock;
@@ -47,6 +51,7 @@ public class AuthServiceTests
         dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(users.GetEnumerator());
 
         _dbContextMock.Setup(db => db.ApplicationUsers).Returns(dbSetMock.Object);
+        _userManagerMock.Setup(um => um.FindByNameAsync(user.UserName)).ReturnsAsync(user);
         _userManagerMock.Setup(um => um.CheckPasswordAsync(user, userLogin.Password)).ReturnsAsync(true);
 
         // Act
@@ -72,6 +77,7 @@ public class AuthServiceTests
         dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(users.GetEnumerator());
 
         _dbContextMock.Setup(db => db.ApplicationUsers).Returns(dbSetMock.Object);
+        _userManagerMock.Setup(um => um.FindByNameAsync(user.UserName)).ReturnsAsync(user);
         _userManagerMock.Setup(um => um.CheckPasswordAsync(user, userLogin.Password)).ReturnsAsync(false);
 
         // Act

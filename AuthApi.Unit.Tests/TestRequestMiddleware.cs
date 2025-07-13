@@ -1,9 +1,12 @@
+using AuthApi.Infrastructure.CultureMiddleware;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
-using AuthApi.Infrastructure.CultureMiddleware;
 
 namespace AuthApi.Tests.Infrastructure
 {
+    /// <summary>
+    /// Tests for the Request-Culture Middleware
+    /// </summary>
     public class TestRequestMiddleware
     {
         [Fact]

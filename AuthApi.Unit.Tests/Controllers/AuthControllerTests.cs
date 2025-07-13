@@ -77,7 +77,8 @@ namespace AuthApi.Unit.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(expectedResult, okResult.Value);
+            var dtoResult = Assert.IsType<AuthResponseDto>(okResult.Value);
+            Assert.Equal(expectedResult, dtoResult.TResponse);
         }
     }
 }

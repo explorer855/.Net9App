@@ -2,10 +2,12 @@
 using AuthApi.Models.Dtos;
 using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Services
 {
+    /// <summary>
+    /// Class for handling authentication services.
+    /// </summary>
     public class AuthService
         : IAuthService
     {
@@ -22,11 +24,16 @@ namespace AuthApi.Services
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
+        /// <summary>
+        /// Login a user with the provided credentials.
+        /// </summary>
+        /// <param name="userLogin"></param>
+        /// <returns></returns>
         public async Task<(string?, bool)> LoginAsync(UserLoginRequest userLogin)
         {
             try
             {
-                var appUser = await _db.ApplicationUsers.SingleOrDefaultAsync(u => u.UserName == userLogin.Username);
+                var appUser = await _userManager.FindByNameAsync(userLogin.Username);
                 var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
 
                 if (siginIn)
@@ -42,6 +49,12 @@ namespace AuthApi.Services
             }
         }
 
+        /// <summary>
+        /// Register a new user with the provided details.
+        /// </summary>
+        /// <param name="registerUser"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<string?> RegisterAsync(RegisterUserRequest registerUser)
         {
             try
