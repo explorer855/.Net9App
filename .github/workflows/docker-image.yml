@@ -1,4 +1,4 @@
-name: Demo .NET 8 API
+name: GitHub Action Demo for a .NET 9 API
 
 on:
   push:
