@@ -6,6 +6,7 @@ using AuthApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text.Json;
 
 namespace AuthApi
@@ -42,7 +43,11 @@ namespace AuthApi
                 });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(opts =>
+            {
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                opts.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
             
 
             var app = builder.Build();
