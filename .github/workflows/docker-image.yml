@@ -11,9 +11,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: [ '9.0.x' ]
 
     steps:
     - uses: actions/checkout@v4
@@ -21,13 +18,15 @@ jobs:
       run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
 
     - uses: actions/checkout@v4
-    - name: Install Unit Test dependencies
-      run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-${{ (matrix.dotnet-version) }}"
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    - run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-$(date +%s)"
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
-        name: dotnet-results-${{ matrix.dotnet-version }}
-        path: TestResults-${{ matrix.dotnet-version }}
+        name: dotnet-results-$(date +%s)
+        path: TestResults-$(date +%s)
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
 
