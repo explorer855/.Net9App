@@ -25,6 +25,9 @@ namespace AuthApi.Tests.Infrastructure
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
 
+            // Set Query string Culture parameter as DE
+            context.Request.QueryString = context.Request.QueryString.Add("culture", "en-us");
+
             //Call the middleware
             await middleware.InvokeAsync(context);
 
