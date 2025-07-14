@@ -21,6 +21,7 @@ jobs:
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
+    - run: dotnet restore ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj"
     - run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-$(date +%s)"
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
