@@ -15,7 +15,7 @@ namespace AuthApi.Services
         /// Logs in a user with the provided email and password.
         /// </summary>
         /// <param name="userLogin">The user login model.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the User-Id & IsValid Login flag.</returns>
+        /// <returns>A task that represents the asynchronous operation, containing the User-Id and IsValid Login flag.</returns>
         Task<(string?, bool)> LoginAsync(UserLoginRequest userLogin);
     }
 }
