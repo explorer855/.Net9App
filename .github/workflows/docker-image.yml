@@ -22,12 +22,12 @@ jobs:
       with:
         dotnet-version: '9.0.x'
     - run: dotnet restore ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj"
-    - run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-$(date +%s)"
+    - run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-${{ github.event.repository.updated_at}}"
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
-        name: dotnet-results-$(date +%s)
-        path: TestResults-$(date +%s)
+        name: dotnet-results-${{ github.event.repository.updated_at}}
+        path: TestResults-${{ github.event.repository.updated_at}}
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
 
