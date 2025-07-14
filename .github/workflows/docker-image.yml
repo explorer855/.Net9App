@@ -25,7 +25,7 @@ jobs:
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
-        name: dotnet-results-${{ github.event.repository.updated_at}}
+        name: dotnet-results-AuthApi
         path: TestResults-${{ github.event.repository.updated_at}}
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
