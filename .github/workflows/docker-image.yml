@@ -11,6 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '9.0.x', '8.0.x' ]
 
     steps:
     - uses: actions/checkout@v4
@@ -18,6 +21,17 @@ jobs:
       run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
 
     - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Test with dotnet
+      run: dotnet test ".\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj" --no-restore --logger trx --results-directory "TestResults-${{ (matrix.dotnet-version) }}"
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-results-${{ matrix.dotnet-version }}
+        path: TestResults-${{ matrix.dotnet-version }}
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
     - name: Build the Auth Api image
       run: docker build . --file AuthApi/Dockerfile --tag authapi:$(date +%s)
     
