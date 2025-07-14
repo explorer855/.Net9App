@@ -9,13 +9,28 @@ on:
 jobs:
 
   build:
-
+    name: Build and Test .NET 9 API
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Build WebApi Docker image
       run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
+
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    - run: dotnet restore ".\WebApi.sln"
+    - run: dotnet test ".\WebApi.sln" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --no-restore --logger trx --results-directory "TestResults-${{ github.event.repository.updated_at}}"
+    
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-results-AuthApi
+        path: TestResults-${{ github.event.repository.updated_at}}
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
 
     - uses: actions/checkout@v4
     - name: Build the Auth Api image

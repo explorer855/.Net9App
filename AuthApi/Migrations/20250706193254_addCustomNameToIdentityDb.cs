@@ -5,8 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AuthApi.Migrations
 {
-    [ExcludeFromCodeCoverage]
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]    
     public partial class addCustomNameToIdentityDb : Migration
     {
         /// <inheritdoc />
