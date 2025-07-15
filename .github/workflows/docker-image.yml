@@ -1,4 +1,4 @@
-name: GitHub Action Demo for a .NET 9 API
+name: .NET 9 API - Identity
 
 on:
   push:

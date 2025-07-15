@@ -1,6 +1,6 @@
-[![GitHub Action Demo for a .NET 9 API](https://github.com/explorer855/.Net9App/actions/workflows/docker-image.yml/badge.svg)](https://github.com/explorer855/.Net9App/actions/workflows/docker-image.yml)
-
 # .NET 9 - Identity Project
+
+[![](https://github.com/explorer855/.Net9App/actions/workflows/docker-image.yml/badge.svg)](https://github.com/explorer855/.Net9App/actions/workflows/docker-image.yml)
 
 This project demonstrates user authentication and authorization using **ASP.NET Core Identity**. It includes features like user registration, login, role management, and secure API access.
 
