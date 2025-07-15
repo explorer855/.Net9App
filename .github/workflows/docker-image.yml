@@ -17,10 +17,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build WebApi Docker image
-      run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
-
-    - uses: actions/checkout@v4
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
@@ -35,7 +31,9 @@ jobs:
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
 
-    - uses: actions/checkout@v4
+    - name: Build WebApi Docker image
+      run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
+
     - name: Build the Auth Api image
       run: docker build . --file AuthApi/Dockerfile --tag authapi:$(date +%s)
     
