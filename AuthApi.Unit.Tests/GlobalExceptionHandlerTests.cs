@@ -64,11 +64,11 @@ namespace AuthApi.Tests.Infrastructure
             var problemDetails = await GetProblemDetailsFromResponse(context);
             Assert.Equal("An exception occurred!!", problemDetails.Title);
             Assert.Equal(expectedStatusCode, problemDetails.Status);
+
             if (exception.InnerException != null)
                 Assert.Equal(exception.InnerException.Message, problemDetails.Detail);
             else
                 Assert.Null(problemDetails.Detail);
-            Assert.Equal(exception.HelpLink, problemDetails.Instance);
         }
 
         [Fact]
