@@ -1,6 +1,6 @@
 ﻿using AuthApi.Models.Dtos;
 
-namespace AuthApi.Services
+namespace AuthApi.Infrastructure.Services
 {
     public interface IAuthService
     {

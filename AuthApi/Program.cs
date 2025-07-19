@@ -1,8 +1,8 @@
+using AuthApi.Application.Middlewares;
+using AuthApi.Application.Validators;
 using AuthApi.Data;
-using AuthApi.Infrastructure.Middlewares;
-using AuthApi.Infrastructure.Validators;
+using AuthApi.Infrastructure.Services;
 using AuthApi.Models.Entities;
-using AuthApi.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,14 +19,12 @@ namespace AuthApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //Setup Cosmos DB
-
             // Add Exception Handling 
-            builder.Services.AddProblemDetails();
-
+            builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-            builder.Services.AddValidatorsFromAssemblyContaining<UserLoginRequestValidator>();
+            //Setup Fluent Validations
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);           
 
             // Add services to the container. Register the DbContext with Cosmos DB
             builder.Services.AddDbContext<AuthDbContext>(options =>
@@ -56,7 +54,7 @@ namespace AuthApi
 
             var app = builder.Build();
 
-            app.UseExceptionHandler();
+            app.UseExceptionHandler(opts => { });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -73,7 +71,7 @@ namespace AuthApi
             app.UseAuthorization();
             app.MapControllers();
 
-            ApplyMigrations(builder);
+            //ApplyMigrations(builder);
 
             app.Run();
         }

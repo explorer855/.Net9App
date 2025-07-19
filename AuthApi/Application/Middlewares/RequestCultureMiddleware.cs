@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace AuthApi.Infrastructure.Middlewares;
+namespace AuthApi.Application.Middlewares;
 
 public class RequestCultureMiddleware
 {

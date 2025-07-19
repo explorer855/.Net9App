@@ -1,5 +1,5 @@
-﻿using AuthApi.Models.Dtos;
-using AuthApi.Services;
+﻿using AuthApi.Infrastructure.Services;
+using AuthApi.Models.Dtos;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -30,11 +30,13 @@ namespace AuthApi.Controllers
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(AuthResponseDto))]
         [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(ProblemDetails))]
         [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(ProblemDetails))]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest user)
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest user, IValidator<UserLoginRequest> validator)
         {
-            if (user is null)
+            var validations = await validator.ValidateAsync(user);
+
+            if(!validations.IsValid)
             {
-                throw new ArgumentNullException(nameof(user));
+                throw new ValidationException(validations.IsValid.ToString(), validations.Errors);
             }
 
             var response = await _authService.LoginAsync(user);

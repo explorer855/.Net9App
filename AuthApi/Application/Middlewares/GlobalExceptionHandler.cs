@@ -4,10 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using System.Security.Cryptography;
 
-namespace AuthApi.Infrastructure.Middlewares
+namespace AuthApi.Application.Middlewares
 {
-    public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger,
-        IProblemDetailsService problemDetailsService)
+    public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
         : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -27,11 +26,8 @@ namespace AuthApi.Infrastructure.Middlewares
                 Title = "An exception occurred!!",
                 Status = httpContext.Response.StatusCode,
                 Detail = exception.InnerException?.Message,
-                Instance = exception.HelpLink
+                Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
             };
-
-            //return await problemDetailsService.TryWriteAsync(
-            //    new ProblemDetailsContext { Exception = exception, HttpContext  = httpContext, ProblemDetails = problemDetails});
 
             await httpContext.Response.WriteAsJsonAsync(value: problemDetails, options: null, contentType: MediaTypeNames.Application.ProblemJson, cancellationToken);
             return true;
