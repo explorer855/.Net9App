@@ -15,14 +15,12 @@ namespace AuthApi.Tests.Infrastructure
     public class GlobalExceptionHandlerTests
     {
         private readonly Mock<ILogger<GlobalExceptionHandler>> _loggerMock;
-        private readonly Mock<IProblemDetailsService> _problemDetailsService;
         private readonly GlobalExceptionHandler _handler;
 
         public GlobalExceptionHandlerTests()
         {
             _loggerMock = new Mock<ILogger<GlobalExceptionHandler>>();
-            _problemDetailsService = new Mock<IProblemDetailsService>();
-            _handler = new GlobalExceptionHandler(_loggerMock.Object, _problemDetailsService.Object);
+            _handler = new GlobalExceptionHandler(_loggerMock.Object);
         }
 
         private static HttpContext CreateHttpContext()

@@ -1,6 +1,7 @@
 ﻿using AuthApi.Controllers;
 using AuthApi.Infrastructure.Services;
 using AuthApi.Models.Dtos;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -9,19 +10,21 @@ namespace AuthApi.Unit.Tests.Controllers
     public class AuthControllerTests
     {
         private readonly Mock<IAuthService> _authServiceMock;
+        private readonly Mock<IValidator<UserLoginRequest>> _validatorMock;
         private readonly AuthController _controller;
 
         public AuthControllerTests()
         {
             _authServiceMock = new Mock<IAuthService>();
             _controller = new AuthController(_authServiceMock.Object);
+            _validatorMock = new Mock<IValidator<UserLoginRequest>>();
         }
 
         [Fact]
         public async Task Login_NullUser_ThrowsArgumentNullException()
         {
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _controller.Login(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _controller.Login(null, _validatorMock.Object));
         }
 
 
@@ -34,7 +37,7 @@ namespace AuthApi.Unit.Tests.Controllers
             _authServiceMock.Setup(s => s.LoginAsync(loginRequest)).ReturnsAsync(expectedTuple);
 
             // Act
-            var result = await _controller.Login(loginRequest);
+            var result = await _controller.Login(loginRequest, _validatorMock.Object);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
