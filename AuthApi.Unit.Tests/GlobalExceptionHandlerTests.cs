@@ -64,6 +64,7 @@ namespace AuthApi.Tests.Infrastructure
             var problemDetails = await GetProblemDetailsFromResponse(context);
             Assert.Equal("An exception occurred!!", problemDetails.Title);
             Assert.Equal(expectedStatusCode, problemDetails.Status);
+            Assert.Equal($"{context.Request.Method} {context.Request.Path}", problemDetails.Instance);
 
             if (exception.InnerException != null)
                 Assert.Equal(exception.InnerException.Message, problemDetails.Detail);
