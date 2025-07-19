@@ -11,17 +11,11 @@ namespace AuthApi.Services
     public class AuthService
         : IAuthService
     {
-        private readonly AuthDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthService(AuthDbContext dbContext,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager) 
+        public AuthService(UserManager<ApplicationUser> userManager) 
         {
-            _db = dbContext;
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-            _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
         /// <summary>
@@ -43,9 +37,9 @@ namespace AuthApi.Services
                 
                 return ("Incorrect Username/Password!", false);
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new InvalidOperationException("An error occurred while registering the user.", ex);
             }
         }
 

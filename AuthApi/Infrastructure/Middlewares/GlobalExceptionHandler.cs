@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using System.Security.Cryptography;
 
-namespace AuthApi.Infrastructure.ExceptionHandling
+namespace AuthApi.Infrastructure.Middlewares
 {
-    public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger,
+        IProblemDetailsService problemDetailsService)
         : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -20,6 +21,7 @@ namespace AuthApi.Infrastructure.ExceptionHandling
                 InvalidOperationException _ or DbUpdateConcurrencyException _ or CryptographicException _ or DbUpdateException _ => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError,
             };
+
             var problemDetails = new ProblemDetails
             {
                 Title = "An exception occurred!!",
@@ -27,6 +29,9 @@ namespace AuthApi.Infrastructure.ExceptionHandling
                 Detail = exception.InnerException?.Message,
                 Instance = exception.HelpLink
             };
+
+            //return await problemDetailsService.TryWriteAsync(
+            //    new ProblemDetailsContext { Exception = exception, HttpContext  = httpContext, ProblemDetails = problemDetails});
 
             await httpContext.Response.WriteAsJsonAsync(value: problemDetails, options: null, contentType: MediaTypeNames.Application.ProblemJson, cancellationToken);
             return true;

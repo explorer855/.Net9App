@@ -1,6 +1,6 @@
 ﻿using AuthApi.Models.Dtos;
 using AuthApi.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
@@ -28,13 +28,13 @@ namespace AuthApi.Controllers
         [HttpPost("login")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(AuthResponseDto))]
-        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(BadRequest))]
-        [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(InternalServerError))]
+        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(ProblemDetails))]
+        [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(ProblemDetails))]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest user)
         {
             if (user is null)
             {
-                return BadRequest("Login details cannot be null.");
+                throw new ArgumentNullException(nameof(user));
             }
 
             var response = await _authService.LoginAsync(user);
@@ -49,13 +49,13 @@ namespace AuthApi.Controllers
         [HttpPost("register")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(AuthResponseDto))]
-        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(BadRequest))]
-        [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(InternalServerError))]
+        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(ProblemDetails))]
+        [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(ProblemDetails))]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUser)
         {
             if (registerUser == null)
             {
-                return BadRequest("Invalid user data.");
+                throw new ArgumentNullException(nameof(registerUser));
             }
             var result = await _authService.RegisterAsync(registerUser);
             return Ok(new AuthResponseDto { TResponse = result, Success = true });
