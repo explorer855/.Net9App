@@ -3,7 +3,7 @@ using AuthApi.Models.Dtos;
 using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthApi.Services
+namespace AuthApi.Infrastructure.Services
 {
     /// <summary>
     /// Class for handling authentication services.

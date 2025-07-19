@@ -1,4 +1,4 @@
-﻿using AuthApi.Infrastructure.Middlewares;
+﻿using AuthApi.Application.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +15,14 @@ namespace AuthApi.Tests.Infrastructure
     public class GlobalExceptionHandlerTests
     {
         private readonly Mock<ILogger<GlobalExceptionHandler>> _loggerMock;
+        private readonly Mock<IProblemDetailsService> _problemDetailsService;
         private readonly GlobalExceptionHandler _handler;
 
         public GlobalExceptionHandlerTests()
         {
             _loggerMock = new Mock<ILogger<GlobalExceptionHandler>>();
-            _handler = new GlobalExceptionHandler(_loggerMock.Object);
+            _problemDetailsService = new Mock<IProblemDetailsService>();
+            _handler = new GlobalExceptionHandler(_loggerMock.Object, _problemDetailsService.Object);
         }
 
         private static HttpContext CreateHttpContext()

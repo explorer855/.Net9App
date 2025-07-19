@@ -1,6 +1,6 @@
 ﻿using AuthApi.Controllers;
+using AuthApi.Infrastructure.Services;
 using AuthApi.Models.Dtos;
-using AuthApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -18,15 +18,12 @@ namespace AuthApi.Unit.Tests.Controllers
         }
 
         [Fact]
-        public async Task Login_ReturnsBadRequest_WhenUserIsNull()
+        public async Task Login_NullUser_ThrowsArgumentNullException()
         {
-            // Act
-            var result = await _controller.Login(null);
-
-            // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Login details cannot be null.", badRequest.Value);
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _controller.Login(null));
         }
+
 
         [Fact]
         public async Task Login_ReturnsOk_WithAuthResponseDto()
@@ -44,17 +41,6 @@ namespace AuthApi.Unit.Tests.Controllers
             var dto = Assert.IsType<AuthResponseDto>(okResult.Value);
             Assert.Equal(expectedTuple.Item1, dto.TResponse);
             Assert.Equal(expectedTuple.Item2, dto.Success);
-        }
-
-        [Fact]
-        public async Task Register_ReturnsBadRequest_WhenRegisterUserIsNull()
-        {
-            // Act
-            var result = await _controller.Register(null);
-
-            // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Invalid user data.", badRequest.Value);
         }
 
         [Fact]

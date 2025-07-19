@@ -1,7 +1,7 @@
 ﻿using AuthApi.Data;
+using AuthApi.Infrastructure.Services;
 using AuthApi.Models.Dtos;
 using AuthApi.Models.Entities;
-using AuthApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -33,7 +33,7 @@ public class AuthServiceTests
             .Options;
         _dbContextMock = new Mock<AuthDbContext>(options);
 
-        _authService = new AuthService(_dbContextMock.Object, _userManagerMock.Object, _roleManagerMock.Object);
+        _authService = new AuthService(_userManagerMock.Object);
     }
 
     [Fact]

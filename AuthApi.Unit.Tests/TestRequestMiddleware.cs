@@ -1,4 +1,4 @@
-using AuthApi.Infrastructure.CultureMiddleware;
+using AuthApi.Application.Middlewares;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
