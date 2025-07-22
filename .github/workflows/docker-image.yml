@@ -10,30 +10,64 @@ permissions:
   contents: read
 
 jobs:
-
-  build:
-    name: Build and Test .NET 9 API
+  build-test-dot-net-apps:
+    name: Build and Test - .NET 9 API
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
-    - run: dotnet restore ".\WebApi.sln"
-    - run: dotnet test ".\WebApi.sln" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --no-restore --logger trx --results-directory "TestResults-${{ github.event.repository.updated_at}}"
+
+    - name: Dotnet Project Restore dependencies
+      run: dotnet restore ".\WebApi.sln"
+
+    - name:  Run tests with coverage
+      run: dotnet test ".\WebApi.sln" --collect:"XPlat Code Coverage" --results-directory ./TestResults
     
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+    - name: Generate HTML and Cobertura coverage reports
+      run: reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"CoverageReport" -reporttypes:HtmlInline_AzurePipelines;Cobertura
+
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: CoverageReport
+
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: CoverageReport/Cobertura.xml
+
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
         name: dotnet-results-AuthApi
-        path: TestResults-${{ github.event.repository.updated_at}}
+        path: ./TestResults
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
 
+    # - name: Build WebApi Docker image
+    #   run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
+
+    # - name: Build the Auth Api image
+    #   run: docker build . --file AuthApi/Dockerfile --tag authapi:$(date +%s)
+  
+  build-docker-image:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
     - name: Build WebApi Docker image
       run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
 
     - name: Build the Auth Api image
       run: docker build . --file AuthApi/Dockerfile --tag authapi:$(date +%s)
-    
