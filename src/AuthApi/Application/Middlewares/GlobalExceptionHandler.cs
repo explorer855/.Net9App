@@ -15,20 +15,12 @@ namespace AuthApi.Application.Middlewares
         {
             logger.LogError(exception.InnerException?.Message ?? exception.Message);
 
-            httpContext.Response.StatusCode = exception switch
-            {
-                NotImplementedException _ => StatusCodes.Status501NotImplemented,
-                NotSupportedException _ => StatusCodes.Status404NotFound,
-                InvalidOperationException _ or DbUpdateConcurrencyException _ or CryptographicException _ or DbUpdateException _ => StatusCodes.Status409Conflict,
-                _ => StatusCodes.Status500InternalServerError,
-            };
-
             var problemDetails = new ProblemDetails
             {
                 Title = "An exception occurred!",
-                Status = httpContext.Response.StatusCode,
-                Detail = exception.InnerException?.Message,
+                Detail = exception.Message,
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
+                Type = exception.GetType().Name,
             };
 
             return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext

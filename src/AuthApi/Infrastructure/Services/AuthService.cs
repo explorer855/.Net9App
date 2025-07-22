@@ -36,7 +36,7 @@ namespace AuthApi.Infrastructure.Services
             }
             catch(Exception ex)
             {
-                throw new InvalidOperationException("An error occurred while registering the user.", ex);
+                throw new InvalidOperationException("Login failed due to an error. Please check your credentials and try again.", ex);
             }
         }
 
@@ -61,7 +61,7 @@ namespace AuthApi.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("An error occurred while registering the user.", ex);
+                throw new InvalidOperationException("Login failed due to an error. Please check your credentials and try again.", ex);
             }
         }
 

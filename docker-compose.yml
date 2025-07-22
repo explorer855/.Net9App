@@ -3,7 +3,7 @@ services:
     image: ${DOCKER_REGISTRY-}authapi
     build:
       context: .
-      dockerfile: AuthApi/Dockerfile
+      dockerfile: src/AuthApi/Dockerfile
     restart: always
     networks:
       - backend-prod
@@ -14,7 +14,7 @@ services:
     image: ${DOCKER_REGISTRY-}webapi
     build:
       context: .
-      dockerfile: WebApi/Dockerfile
+      dockerfile: src/WebApi/Dockerfile
     restart: always
     networks:
       - backend-prod
