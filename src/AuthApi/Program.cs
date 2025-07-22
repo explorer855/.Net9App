@@ -18,6 +18,7 @@ namespace AuthApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
 
             // Add Exception Handling 
             builder.Services.AddProblemDetails();
@@ -54,6 +55,9 @@ namespace AuthApi
             
 
             var app = builder.Build();
+            
+
+            app.MapDefaultEndpoints();
 
             app.UseExceptionHandler();
 

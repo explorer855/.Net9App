@@ -23,7 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "src\WebApi\WebApi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthApi.Unit.Tests", "src\AuthApi.Unit.Tests\AuthApi.Unit.Tests.csproj", "{509049C6-90D9-FE78-01F5-9D2BDC925F77}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.AppHost", "src\WebApi.AppHost\WebApi.AppHost.csproj", "{47938027-ADBA-432B-BB43-B1499C62D35A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.ServiceDefaults", "src\WebApi.ServiceDefaults\WebApi.ServiceDefaults.csproj", "{17642C70-6F69-F401-EA3D-FBF52541F408}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,12 +64,18 @@ Global
 		{509049C6-90D9-FE78-01F5-9D2BDC925F77}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
 		{509049C6-90D9-FE78-01F5-9D2BDC925F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{509049C6-90D9-FE78-01F5-9D2BDC925F77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = NoVariablesDefault
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = NoVariablesDefault
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.NoVariablesDefault|Any CPU.ActiveCfg = NoVariablesDefault
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.NoVariablesDefault|Any CPU.Build.0 = NoVariablesDefault
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = NoVariablesDefault
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = NoVariablesDefault
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47938027-ADBA-432B-BB43-B1499C62D35A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.NoVariablesDefault|Any CPU.ActiveCfg = Release|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.NoVariablesDefault|Any CPU.Build.0 = Release|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17642C70-6F69-F401-EA3D-FBF52541F408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

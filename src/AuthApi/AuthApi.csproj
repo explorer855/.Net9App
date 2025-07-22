@@ -13,9 +13,7 @@
 	<PropertyGroup>
 		<CollectCoverage>true</CollectCoverage>
 		<CoverletOutputFormat>cobertura</CoverletOutputFormat>
-		<DockerfileContext>..\..</DockerfileContext>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -41,6 +39,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\WebApi.ServiceDefaults\WebApi.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 </Project>
