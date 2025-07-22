@@ -20,6 +20,7 @@ namespace AuthApi
             var builder = WebApplication.CreateBuilder(args);
 
             // Add Exception Handling 
+            builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -54,7 +55,7 @@ namespace AuthApi
 
             var app = builder.Build();
 
-            app.UseExceptionHandler(opts => { });
+            app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
