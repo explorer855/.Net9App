@@ -38,7 +38,7 @@ namespace AuthApi.Application.Validators
                 .NotEmpty()
                 .WithMessage("Email is required.")
                 .EmailAddress()
-                .WithMessage(request => $"Invalid {request.Email}.");
+                .WithMessage(request => $"Invalid value for {nameof(request.Email)}");
 
             RuleFor(x => x.Password)
                 .Cascade(cascadeMode: CascadeMode.Stop)
