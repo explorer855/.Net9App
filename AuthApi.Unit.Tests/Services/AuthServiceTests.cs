@@ -1,137 +1,123 @@
-﻿using AuthApi.Data;
-using AuthApi.Infrastructure.Services;
+﻿using AuthApi.Infrastructure.Services;
 using AuthApi.Models.Dtos;
 using AuthApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace AuthApi.Unit.Tests.Services;
-
-/// <summary>
-/// AuthService unit tests
-/// </summary>
-public class AuthServiceTests
+namespace AuthApi.Tests.Infrastructure.Services
 {
-    private readonly Mock<AuthDbContext> _dbContextMock;
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
-    private readonly AuthService _authService;
-
-    public AuthServiceTests()
+    public class AuthServiceTests
     {
-        var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStoreMock.Object, null, null, null, null, null, null, null, null);
+        private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+        private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
+        private readonly AuthService _authService;
 
-        var roleStoreMock = new Mock<IRoleStore<IdentityRole>>();
-        _roleManagerMock = new Mock<RoleManager<IdentityRole>>(
-            roleStoreMock.Object, null, null, null, null);
-
-        var options = new DbContextOptionsBuilder<AuthDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        _dbContextMock = new Mock<AuthDbContext>(options);
-
-        _authService = new AuthService(_userManagerMock.Object);
-    }
-
-    [Fact]
-    public async Task LoginAsync_ReturnsUserId_WhenCredentialsAreValid()
-    {
-        // Arrange
-        var user = new ApplicationUser { Id = "user123", UserName = "testuser" };
-        var userLogin = new UserLoginRequest { Username = "testuser", Password = "password" };
-
-        var users = new[] { user }.AsQueryable();
-        var dbSetMock = new Mock<DbSet<ApplicationUser>>();
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(users.Provider);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.Expression).Returns(users.Expression);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(users.ElementType);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(users.GetEnumerator());
-
-        _dbContextMock.Setup(db => db.ApplicationUsers).Returns(dbSetMock.Object);
-        _userManagerMock.Setup(um => um.FindByNameAsync(user.UserName)).ReturnsAsync(user);
-        _userManagerMock.Setup(um => um.CheckPasswordAsync(user, userLogin.Password)).ReturnsAsync(true);
-
-        // Act
-        var (result, success) = await _authService.LoginAsync(userLogin);
-
-        // Assert
-        Assert.True(success);
-        Assert.Equal("user123", result);
-    }
-
-    [Fact]
-    public async Task LoginAsync_ReturnsError_WhenCredentialsAreInvalid()
-    {
-        // Arrange
-        var user = new ApplicationUser { Id = "user123", UserName = "testuser" };
-        var userLogin = new UserLoginRequest { Username = "testuser", Password = "wrongpassword" };
-
-        var users = new[] { user }.AsQueryable();
-        var dbSetMock = new Mock<DbSet<ApplicationUser>>();
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(users.Provider);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.Expression).Returns(users.Expression);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(users.ElementType);
-        dbSetMock.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(users.GetEnumerator());
-
-        _dbContextMock.Setup(db => db.ApplicationUsers).Returns(dbSetMock.Object);
-        _userManagerMock.Setup(um => um.FindByNameAsync(user.UserName)).ReturnsAsync(user);
-        _userManagerMock.Setup(um => um.CheckPasswordAsync(user, userLogin.Password)).ReturnsAsync(false);
-
-        // Act
-        var (result, success) = await _authService.LoginAsync(userLogin);
-
-        // Assert
-        Assert.False(success);
-        Assert.Equal("Incorrect Username/Password!", result);
-    }
-
-    [Fact]
-    public async Task RegisterAsync_ReturnsSuccessMessage_WhenRegistrationSucceeds()
-    {
-        // Arrange
-        var registerUser = new RegisterUserRequest
+        public AuthServiceTests()
         {
-            Username = "newuser",
-            Email = "newuser@example.com",
-            PhoneNumber = "1234567890",
-            Password = "Password123!"
-        };
+            var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
 
-        _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<ApplicationUser>(), registerUser.Password))
-            .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+                userStoreMock.Object, null, null, null, null, null, null, null, null);
 
-        // Act
-        var result = await _authService.RegisterAsync(registerUser);
+            var contextAccessorMock = new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+            var userClaimsPrincipalFactoryMock = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
 
-        // Assert
-        Assert.Equal("User registered successfully", result);
-    }
+            _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+                _userManagerMock.Object,
+                contextAccessorMock.Object,
+                userClaimsPrincipalFactoryMock.Object,
+                null, null, null, null);
 
-    [Fact]
-    public async Task RegisterAsync_ReturnsErrorMessages_WhenRegistrationFails()
-    {
-        // Arrange
-        var registerUser = new RegisterUserRequest
+            _authService = new AuthService(_userManagerMock.Object, _signInManagerMock.Object);
+        }
+
+        [Fact]
+        public async Task LoginAsync_ValidCredentials_ReturnsUserIdAndSuccess()
         {
-            Username = "failuser",
-            Email = "failuser@example.com",
-            PhoneNumber = "1234567890",
-            Password = "Password123!"
-        };
+            // Arrange
+            var userLogin = new UserLoginRequest { Email = "test@example.com", Password = "Password123!" };
+            var appUser = new ApplicationUser { Id = "123", UserName = "testuser", Email = userLogin.Email };
 
-        var identityError = new IdentityError { Description = "Email is already taken" };
-        var failedResult = IdentityResult.Failed(identityError);
+            _userManagerMock.Setup(um => um.FindByEmailAsync(userLogin.Email)).ReturnsAsync(appUser);
+            _signInManagerMock.Setup(sm => sm.PasswordSignInAsync(appUser.UserName, userLogin.Password, false, true))
+                .ReturnsAsync(SignInResult.Success);
 
-        _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<ApplicationUser>(), registerUser.Password))
-            .ReturnsAsync(failedResult);
+            // Act
+            var result = await _authService.LoginAsync(userLogin);
 
-        // Act
-        var result = await _authService.RegisterAsync(registerUser);
+            // Assert
+            Assert.True(result.Item2);
+            Assert.Equal("123", result.Item1);
+        }
 
-        // Assert
-        Assert.Contains("Email is already taken", result);
+        [Fact]
+        public async Task LoginAsync_InvalidCredentials_ReturnsErrorMessageAndFailure()
+        {
+            // Arrange
+            var userLogin = new UserLoginRequest { Email = "test@example.com", Password = "wrongpassword" };
+            var appUser = new ApplicationUser { Id = "123", UserName = "testuser", Email = userLogin.Email };
+
+            _userManagerMock.Setup(um => um.FindByEmailAsync(userLogin.Email)).ReturnsAsync(appUser);
+            _signInManagerMock.Setup(sm => sm.PasswordSignInAsync(appUser.UserName, userLogin.Password, false, true))
+                .ReturnsAsync(SignInResult.Failed);
+
+            // Act
+            var result = await _authService.LoginAsync(userLogin);
+
+            // Assert
+            Assert.False(result.Item2);
+            Assert.Equal("Incorrect Username/Password!", result.Item1);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_SuccessfulRegistration_ReturnsSuccessMessage()
+        {
+            // Arrange
+            var request = new RegisterUserRequest
+            {
+                Username = "newuser",
+                Email = "newuser@example.com",
+                Password = "StrongPassword123!",
+                PhoneNumber = "1234567890"
+            };
+
+            _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<ApplicationUser>(), request.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _authService.RegisterAsync(request);
+
+            // Assert
+            Assert.Equal("User registered successfully", result);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_FailedRegistration_ReturnsErrorMessages()
+        {
+            // Arrange
+            var request = new RegisterUserRequest
+            {
+                Username = "baduser",
+                Email = "baduser@example.com",
+                Password = "weak",
+                PhoneNumber = "1234567890"
+            };
+
+            var identityErrors = new[]
+            {
+                new IdentityError { Description = "Password is too weak." },
+                new IdentityError { Description = "Email already exists." }
+            };
+
+            _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<ApplicationUser>(), request.Password))
+                .ReturnsAsync(IdentityResult.Failed(identityErrors));
+
+            // Act
+            var result = await _authService.RegisterAsync(request);
+
+            // Assert
+            Assert.Contains("Password is too weak.", result);
+            Assert.Contains("Email already exists.", result);
+        }
     }
 }

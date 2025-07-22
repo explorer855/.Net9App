@@ -8,15 +8,12 @@ namespace AuthApi.Infrastructure.Services
     /// <summary>
     /// Class for handling authentication services.
     /// </summary>
-    public class AuthService
+    public class AuthService(UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager)
         : IAuthService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-
-        public AuthService(UserManager<ApplicationUser> userManager) 
-        {
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        private readonly SignInManager<ApplicationUser> _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
 
         /// <summary>
         /// Login a user with the provided credentials.
@@ -27,10 +24,10 @@ namespace AuthApi.Infrastructure.Services
         {
             try
             {
-                var appUser = await _userManager.FindByNameAsync(userLogin.Username);
-                var siginIn = await _userManager.CheckPasswordAsync(appUser, userLogin.Password);
+                var appUser = await _userManager.FindByEmailAsync(userLogin.Email);
+                var siginIn = await _signInManager.PasswordSignInAsync(appUser.UserName, userLogin.Password, false, true);
 
-                if (siginIn)
+                if (siginIn.Succeeded)
                 {
                     return (appUser.Id, true);
                 }
