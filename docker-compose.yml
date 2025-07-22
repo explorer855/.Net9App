@@ -1,5 +1,7 @@
 services:
   authapi:
+    environment:
+      - ASPNETCORE_HTTPS_PORTS=8081
     image: ${DOCKER_REGISTRY-}authapi
     build:
       context: .
