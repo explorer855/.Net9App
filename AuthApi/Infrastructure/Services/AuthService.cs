@@ -41,6 +41,31 @@ namespace AuthApi.Infrastructure.Services
         }
 
         /// <summary>
+        /// Login a user with Username in the provided credentials.
+        /// </summary>
+        /// <param name="userLogin"></param>
+        /// <returns></returns>
+        public async Task<(string?, bool)> LoginByUserNameAsync(UserNameLoginRequest userLogin)
+        {
+            try
+            {
+                var appUser = await _userManager.FindByNameAsync(userLogin.Username);
+                var siginIn = await _signInManager.PasswordSignInAsync(appUser.UserName, userLogin.Password, false, true);
+
+                if (siginIn.Succeeded)
+                {
+                    return (appUser.Id, true);
+                }
+
+                return ("Incorrect Username/Password!", false);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while registering the user.", ex);
+            }
+        }
+
+        /// <summary>
         /// Register a new user with the provided details.
         /// </summary>
         /// <param name="registerUser"></param>
