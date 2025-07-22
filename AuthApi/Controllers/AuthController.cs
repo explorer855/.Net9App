@@ -25,7 +25,7 @@ namespace AuthApi.Controllers
         /// </summary>
         /// <param name="user">User Login Request</param>
         /// <returns></returns>
-        [HttpPost("login")]
+        [HttpPost("login/email")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(AuthResponseDto))]
         [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(ProblemDetails))]
@@ -40,6 +40,29 @@ namespace AuthApi.Controllers
             }
 
             var response = await _authService.LoginAsync(user);
+            return Ok(new AuthResponseDto { TResponse = response.Item1, Success = response.Item2 });
+        }
+
+        /// <summary>
+        /// Endpoint for user login
+        /// </summary>
+        /// <param name="user">User Login Request</param>
+        /// <returns></returns>
+        [HttpPost("login/userName")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(AuthResponseDto))]
+        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest, type: typeof(ProblemDetails))]
+        [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError, type: typeof(ProblemDetails))]
+        public async Task<IActionResult> LoginByUserName([FromBody] UserNameLoginRequest user, IValidator<UserNameLoginRequest> validator)
+        {
+            var validations = await validator.ValidateAsync(user);
+
+            if (!validations.IsValid)
+            {
+                throw new ValidationException(validations.IsValid.ToString(), validations.Errors);
+            }
+
+            var response = await _authService.LoginByUserNameAsync(user);
             return Ok(new AuthResponseDto { TResponse = response.Item1, Success = response.Item2 });
         }
 

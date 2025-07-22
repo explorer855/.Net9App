@@ -1,9 +1,18 @@
-﻿namespace AuthApi.Models.Dtos
+﻿namespace AuthApi.Models.Dtos;
+
+public class BaseUserRequest
 {
-    public class UserLoginRequest
-    {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
+    public string Password { get; set; } = string.Empty;
+}
+
+public class UserNameLoginRequest
+    : BaseUserRequest
+{
+    public string Username { get; set; } = string.Empty;
+}
+
+public class UserLoginRequest
+    : BaseUserRequest
+{
+    public string Email { get; set; } = string.Empty;
 }
