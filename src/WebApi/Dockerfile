@@ -14,6 +14,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
 COPY ["src/WebApi/WebApi.csproj", "src/WebApi/"]
+COPY ["WebApi.ServiceDefaults/WebApi.ServiceDefaults.csproj", "WebApi.ServiceDefaults/"]
 COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
 COPY ["src/Domain/Domain.csproj", "src/Domain/"]
 RUN dotnet restore "./src/WebApi/WebApi.csproj"

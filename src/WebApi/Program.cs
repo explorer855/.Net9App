@@ -7,6 +7,8 @@ using WebApi.Infrastructure.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 if (builder.Environment.IsDevelopment())
     builder.Services.AddDbContextFactory<CosmosDbContext>(optionsBuilder =>
       optionsBuilder
@@ -49,6 +51,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
