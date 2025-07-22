@@ -7,7 +7,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <UserSecretsId>e2bd3642-5812-45b9-9565-591347e82084</UserSecretsId>
+    <UserSecretsId>b03132e4-4085-4ab1-b92b-de834427be88</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AuthApi\AuthApi.csproj" />
-    <ProjectReference Include="..\WebApi\WebApi.csproj" />
+    <ProjectReference Include="..\src\AuthApi\AuthApi.csproj" />
+    <ProjectReference Include="..\src\WebApi\WebApi.csproj" />
   </ItemGroup>
 
 </Project>

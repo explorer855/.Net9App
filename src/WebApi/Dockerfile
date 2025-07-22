@@ -14,17 +14,18 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
 COPY ["src/WebApi/WebApi.csproj", "src/WebApi/"]
+COPY ["WebApi.ServiceDefaults/WebApi.ServiceDefaults.csproj", "WebApi.ServiceDefaults/"]
 COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
 COPY ["src/Domain/Domain.csproj", "src/Domain/"]
 RUN dotnet restore "./src/WebApi/WebApi.csproj"
 COPY . .
 WORKDIR "/src/src/WebApi"
-RUN dotnet build --no-restore "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./WebApi.csproj" --no-release -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish --no-restore "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./WebApi.csproj" --no-release -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
