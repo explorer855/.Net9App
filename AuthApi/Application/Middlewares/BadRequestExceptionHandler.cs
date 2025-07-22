@@ -1,39 +1,58 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 
 namespace AuthApi.Application.Middlewares
 {
-    public class BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger)
+    public sealed class BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger,
+        IProblemDetailsService problemDetailsService)
         : IExceptionHandler
     {
+        private readonly IProblemDetailsService _problemDetailsService = problemDetailsService ?? throw new ArgumentNullException(nameof(problemDetailsService));
+
+        /// <summary>
+        /// Handle the exception and return a ProblemDetails response if applicable.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="exception"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            logger.LogError(exception.InnerException?.Message);
-
-            var validationException = exception as ValidationException;
-
-            httpContext.Response.StatusCode = exception switch
+            if (exception is ValidationException validationEx)
             {
-                ValidationException _ => StatusCodes.Status400BadRequest,
-                _ => throw new NotImplementedException()
-            };
+                logger.LogError(exception.InnerException?.Message ?? exception.Message);
 
-            var problemDetails = new ProblemDetails
-            {
-                Title = "An exception occurred due to BadRequest!!",
-                Status = httpContext.Response.StatusCode,
-                Detail = validationException.InnerException?.Message,
-                Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
-                Extensions = new Dictionary<string, object?>
+                var statusCode = StatusCodes.Status400BadRequest;
+
+                httpContext.Response.StatusCode = statusCode;
+
+                var problemDetails = new ProblemDetails
                 {
-                    { "errors", validationException.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }) }
-                }
-            };
+                    Title = "An exception occurred!",
+                    Detail = exception.Message,
+                    Type = exception.GetType().Name,
+                    Status = statusCode,
+                    Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        ["traceId"] = httpContext.TraceIdentifier,
+                        ["requestId"] = httpContext.Request.Headers["Request-Id"].ToString(),
+                        ["errors"] = validationEx.Errors.Select(x => x.ErrorMessage)
+                    }
+                };
 
-            await httpContext.Response.WriteAsJsonAsync(value: problemDetails, options: null, contentType: MediaTypeNames.Application.ProblemJson, cancellationToken);
-            return true;
+                return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+                {
+                    HttpContext = httpContext,
+                    ProblemDetails = problemDetails,
+                    Exception = exception,
+                });
+            }
+            else 
+            {
+                return false;
+            }            
         }
     }
 }

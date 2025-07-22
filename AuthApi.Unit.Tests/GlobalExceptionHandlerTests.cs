@@ -1,97 +1,97 @@
 ﻿using AuthApi.Application.Middlewares;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Security.Cryptography;
-using System.Text.Json;
 
-namespace AuthApi.Tests.Infrastructure
+namespace AuthApi.Tests.Middlewares;
+public class GlobalExceptionHandlerTests
 {
-    /// <summary>
-    /// Global Exception Handler Tests
-    /// </summary>
-    public class GlobalExceptionHandlerTests
+    private readonly Mock<ILogger<GlobalExceptionHandler>> _mockLogger = new();
+    private readonly Mock<IProblemDetailsService> _mockProblemDetailsService = new();
+    private readonly GlobalExceptionHandler _handler;
+
+    public GlobalExceptionHandlerTests()
     {
-        private readonly Mock<ILogger<GlobalExceptionHandler>> _loggerMock;
-        private readonly GlobalExceptionHandler _handler;
+        _handler = new GlobalExceptionHandler(_mockLogger.Object, _mockProblemDetailsService.Object);
+    }
 
-        public GlobalExceptionHandlerTests()
-        {
-            _loggerMock = new Mock<ILogger<GlobalExceptionHandler>>();
-            _handler = new GlobalExceptionHandler(_loggerMock.Object);
-        }
+    private static DefaultHttpContext CreateHttpContext(string method = "POST", string path = "/api/data")
+    {
+        var context = new DefaultHttpContext();
+        context.Request.Method = method;
+        context.Request.Path = path;
+        return context;
+    }
+    private void SetupProblemDetailsService(bool result = true)
+    {
+        _mockProblemDetailsService
+            .Setup(s => s.TryWriteAsync(It.IsAny<ProblemDetailsContext>()))
+            .ReturnsAsync(result);
+    }
 
-        private static HttpContext CreateHttpContext()
-        {
-            var context = new DefaultHttpContext();
-            context.Response.Body = new MemoryStream();
-            return context;
-        }
+    [Theory]
+    [InlineData(typeof(NotImplementedException), StatusCodes.Status501NotImplemented)]
+    [InlineData(typeof(NotSupportedException), StatusCodes.Status404NotFound)]
+    [InlineData(typeof(InvalidOperationException), StatusCodes.Status409Conflict)]
+    [InlineData(typeof(DbUpdateException), StatusCodes.Status409Conflict)]
+    [InlineData(typeof(Exception), StatusCodes.Status500InternalServerError)]
+    public async Task TryHandleAsync_SetsCorrectStatusCode(Type exceptionType, int expectedStatusCode)
+    {
+        // Arrange
+        var exception = (Exception)Activator.CreateInstance(exceptionType)!;
+        var context = CreateHttpContext();
+        SetupProblemDetailsService();
 
-        private async Task<ProblemDetails> GetProblemDetailsFromResponse(HttpContext context)
-        {
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            return await JsonSerializer.DeserializeAsync<ProblemDetails>(
-                context.Response.Body,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        }
+        // Act
+        var result = await _handler.TryHandleAsync(context, exception, CancellationToken.None);
 
-        [Theory]
-        [InlineData(typeof(NotImplementedException), StatusCodes.Status501NotImplemented)]
-        [InlineData(typeof(NotSupportedException), StatusCodes.Status404NotFound)]
-        [InlineData(typeof(InvalidOperationException), StatusCodes.Status409Conflict)]
-        [InlineData(typeof(DbUpdateConcurrencyException), StatusCodes.Status409Conflict)]
-        [InlineData(typeof(CryptographicException), StatusCodes.Status409Conflict)]
-        [InlineData(typeof(DbUpdateException), StatusCodes.Status409Conflict)]
-        [InlineData(typeof(Exception), StatusCodes.Status500InternalServerError)]
-        public async Task TryHandleAsync_SetsCorrectStatusCodeAndReturnsProblemDetails(Type exceptionType, int expectedStatusCode)
-        {
-            // Arrange
-            var context = CreateHttpContext();
-            var innerException = new Exception("Inner error message") { HelpLink = "help-link" };
-            var exception = (Exception)Activator.CreateInstance(exceptionType, "Test error");
-            exception = exceptionType == typeof(Exception) ? exception : (Exception)Activator.CreateInstance(exceptionType, "Test error", innerException);
+        // Assert
+        Assert.True(result);
+        Assert.Equal(expectedStatusCode, context.Response.StatusCode);
 
-            // Act
-            var result = await _handler.TryHandleAsync(context, exception, CancellationToken.None);
+        var resultException = exception.InnerException?.Message ?? exception.Message;
 
-            // Assert
-            Assert.True(result);
-            Assert.Equal(expectedStatusCode, context.Response.StatusCode);
+        _mockLogger.Verify(logger =>
+            logger.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) =>
+                    v.ToString().Contains(resultException)),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
 
-            var problemDetails = await GetProblemDetailsFromResponse(context);
-            Assert.Equal("An exception occurred!!", problemDetails.Title);
-            Assert.Equal(expectedStatusCode, problemDetails.Status);
-            Assert.Equal($"{context.Request.Method} {context.Request.Path}", problemDetails.Instance);
 
-            if (exception.InnerException != null)
-                Assert.Equal(exception.InnerException.Message, problemDetails.Detail);
-            else
-                Assert.Null(problemDetails.Detail);
-        }
+        _mockProblemDetailsService.Verify(s => s.TryWriteAsync(It.IsAny<ProblemDetailsContext>()), Times.Once);
+    }
 
-        [Fact]
-        public async Task TryHandleAsync_LogsError()
-        {
-            // Arrange
-            var context = CreateHttpContext();
-            var innerException = new Exception("Inner error message");
-            var exception = new InvalidOperationException("Test error", innerException);
+    [Fact]
+    public async Task TryHandleAsync_UsesInnerExceptionMessageInLogAndProblemDetails()
+    {
+        // Arrange
+        var innerEx = new Exception("Inner boom!");
+        var ex = new Exception("Outer shell", innerEx);
+        var context = CreateHttpContext();
+        SetupProblemDetailsService();
 
-            // Act
-            await _handler.TryHandleAsync(context, exception, CancellationToken.None);
+        // Act
+        await _handler.TryHandleAsync(context, ex, CancellationToken.None);
 
-            // Assert
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Inner error message")),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
-        }
+        // Assert
+        _mockLogger.Verify(
+               x => x.Log(
+                   LogLevel.Error,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((v, t) =>
+                        v.ToString().Contains("Inner boom!")),
+                   null,
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+               Times.Once);
+
+        _mockProblemDetailsService.Verify(s =>
+            s.TryWriteAsync(It.Is<ProblemDetailsContext>(ctx =>
+                ctx.ProblemDetails.Detail == "Inner boom!" &&
+                ctx.ProblemDetails.Instance == "POST /api/data")), Times.Once);
     }
 }
