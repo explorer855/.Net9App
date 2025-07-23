@@ -14,14 +14,24 @@ This project demonstrates user authentication and authorization using **ASP.NET 
 - Docker
 - CI/CD - GitHub Actions
 
-## 📦 Project Structure
+## 📦 Auth API - Project Structure
 
-- `Models/`: Custom Identity models (e.g., `ApplicationUser`)
+- `Models/`: Asp.NET Core Identity with models (e.g., `ApplicationUser`)
 - `Data/`: EF Core DbContext and migrations
-- `Controllers/`: API endpoints
-- `Services/`: Business logic and Identity helpers
-- `Startup.cs` / `Program.cs`: Service registration and Auth middleware
+- `Migrations/`: Application DB migrations
+- `Controllers/`:  Auth API endpoints
+- `Infrastructure/Services/`: Simple Auth Service for User Registeration & Login.
+- `Application/Middlewares`: Auth API
+- `Application/Validators`: Fluent Model Validators
+- `Startup.cs` / `Program.cs`: Auth API Service registrations and Auth middleware setup
 
-## 🛠️ Setup Instructions
+## 🛠️ Setup Instructions (Local playgroud)
 
-1. TBD
+- Current solution leverages .NET Aspire as the default Container Orchestrator. Open VS Code and run below commands to fire up the solution. Read more about .NET Aspire here: https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview
+
+```
+dotnet run --project .\WebApi.AppHost\WebApi.AppHost.csproj
+```
+![alt text](Aspire-Orchestration-Pic.png)
+--- 
+
