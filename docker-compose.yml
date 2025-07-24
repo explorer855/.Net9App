@@ -1,0 +1,21 @@
+services:
+  authapi:
+    image: ${DOCKER_REGISTRY-}authapi
+    build:
+      context: .
+      dockerfile: src/AuthApi/Dockerfile
+    networks:
+      - backend-gateway
+
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: src/WebApi/Dockerfile
+    networks:
+      - backend-gateway
+
+
+networks:
+  backend-gateway: {}
+
