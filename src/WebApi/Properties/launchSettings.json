@@ -2,13 +2,13 @@
   "profiles": {
     "https": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:5001;"
+      "applicationUrl": "https://localhost:7001;"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -20,11 +20,10 @@
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "7070",
-        "ASPNETCORE_HTTP_PORTS": "7071"
+        "ASPNETCORE_HTTP_PORTS": "8081"
       },
       "publishAllPorts": true,
       "useSSL": true
