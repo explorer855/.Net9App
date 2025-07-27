@@ -1,8 +1,8 @@
-using AuthApi.Application.Middlewares;
+using IdentityApi.Application.Middlewares;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
-namespace AuthApi.Tests.Middlewares;
+namespace IdentityApi.Tests.Middlewares;
 
 /// <summary>
 /// Tests for the Request-Culture Middleware

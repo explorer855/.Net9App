@@ -1,7 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.AuthApi>("authapi");
+builder.AddProject<Projects.IdentityApi>("IdentityApi");
 
-builder.AddProject<Projects.WebApi>("webapi");
+builder.AddProject<Projects.CatalogApi>("CatalogApi");
 
 builder.Build().Run();

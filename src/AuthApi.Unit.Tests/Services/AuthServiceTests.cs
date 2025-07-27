@@ -1,10 +1,10 @@
-﻿using AuthApi.Infrastructure.Services;
-using AuthApi.Models.Dtos;
-using AuthApi.Models.Entities;
+﻿using IdentityApi.Infrastructure.Services;
+using IdentityApi.Models.Dtos;
+using IdentityApi.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace AuthApi.Tests.Infrastructure.Services
+namespace IdentityApi.Tests.Infrastructure.Services
 {
     public class AuthServiceTests
     {

@@ -1,12 +1,12 @@
-﻿using AuthApi.Controllers;
-using AuthApi.Infrastructure.Services;
-using AuthApi.Models.Dtos;
+﻿using IdentityApi.Controllers;
+using IdentityApi.Infrastructure.Services;
+using IdentityApi.Models.Dtos;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace AuthApi.Unit.Tests.Controllers;
+namespace IdentityApi.Unit.Tests.Controllers;
 public class AuthControllerTests
 {
     private readonly Mock<IAuthService> _authServiceMock = new();
@@ -34,8 +34,8 @@ public class AuthControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var response = Assert.IsType<AuthResponseDto>(okResult.Value);
-        Assert.True(response.Success);
+        var response = Assert.IsType<AuthResponseDto<string>>(okResult.Value);
+        Assert.True(response.IsSuccess);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class AuthControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var response = Assert.IsType<AuthResponseDto>(okResult.Value);
-        Assert.True(response.Success);
+        var response = Assert.IsType<AuthResponseDto<string>>(okResult.Value);
+        Assert.True(response.IsSuccess);
     }
 
     [Fact]

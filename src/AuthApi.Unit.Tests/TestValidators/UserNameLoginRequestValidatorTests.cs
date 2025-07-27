@@ -1,8 +1,8 @@
-﻿using AuthApi.Application.Validators;
-using AuthApi.Models.Dtos;
+﻿using IdentityApi.Application.Validators;
+using IdentityApi.Models.Dtos;
 using FluentValidation.TestHelper;
 
-namespace AuthApi.Tests.Validators;
+namespace IdentityApi.Tests.Validators;
 
 public class UserNameLoginRequestValidatorTests
 {
