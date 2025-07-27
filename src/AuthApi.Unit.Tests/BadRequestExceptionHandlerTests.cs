@@ -1,11 +1,11 @@
-﻿using AuthApi.Application.Middlewares;
+﻿using IdentityApi.Application.Middlewares;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace AuthApi.Tests.Middlewares
+namespace IdentityApi.Tests.Middlewares
 {
     public class BadRequestExceptionHandlerTests
     {

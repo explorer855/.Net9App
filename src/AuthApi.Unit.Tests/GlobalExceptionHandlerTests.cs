@@ -1,10 +1,10 @@
-﻿using AuthApi.Application.Middlewares;
+﻿using IdentityApi.Application.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace AuthApi.Tests.Middlewares;
+namespace IdentityApi.Tests.Middlewares;
 public class GlobalExceptionHandlerTests
 {
     private readonly Mock<ILogger<GlobalExceptionHandler>> _mockLogger = new();

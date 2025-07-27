@@ -1,7 +1,7 @@
-﻿using AuthApi.Data;
+﻿using IdentityApi.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthApi.Unit.Tests.Helpers
+namespace IdentityApi.Unit.Tests.Helpers
 {
     internal class TestDbContextOptions
     {

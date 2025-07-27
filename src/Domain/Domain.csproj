@@ -18,4 +18,8 @@
     <PackageReference Include="AspNetCore.Identity.CosmosDb" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataContext\" />
+  </ItemGroup>
+
 </Project>

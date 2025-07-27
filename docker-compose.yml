@@ -1,21 +1,25 @@
 services:
-  authapi:
-    image: ${DOCKER_REGISTRY-}authapi
+
+   identityapi:
+    image: ${DOCKER_REGISTRY-}identityapi
     build:
       context: .
-      dockerfile: src/AuthApi/Dockerfile
+      dockerfile: src/IdentityApi/Dockerfile
+    ports:
+      - "7000:8081"
     networks:
       - backend-gateway
 
-  webapi:
-    image: ${DOCKER_REGISTRY-}webapi
+   catalogapi:
+    image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
-      dockerfile: src/WebApi/Dockerfile
+      dockerfile: src/CatalogApi/Dockerfile
+    ports:
+      - "7001:8081"
     networks:
       - backend-gateway
 
 
 networks:
   backend-gateway: {}
-

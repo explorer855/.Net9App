@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace AuthApi.Unit.Tests.Helpers.AsyncQueryProvider
+namespace IdentityApi.Unit.Tests.Helpers.AsyncQueryProvider
 {
     /// <summary>
     /// Class to create an asynchronous queryable collection for testing purposes.

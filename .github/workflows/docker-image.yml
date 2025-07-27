@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build-test-dot-net-apps:
+  build-restore-test-projects:
     name: Build and Test - .NET 9 API
     runs-on: ubuntu-latest
 
@@ -44,26 +44,20 @@ jobs:
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
-        name: dotnet-results-AuthApi
+        name: dotnet-results-IdentityApi
         path: ./TestResults
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
-
-    # - name: Build WebApi Docker image
-    #   run: docker build . --file WebApi/Dockerfile --tag webapi:$(date +%s)
-
-    # - name: Build the Auth Api image
-    #   run: docker build . --file AuthApi/Dockerfile --tag authapi:$(date +%s)
   
   build-docker-image:
-    needs: build-test-dot-net-apps
+    needs: build-restore-test-projects
     name: Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build WebApi Docker image
-      run: docker build . --file src/WebApi/Dockerfile --tag webapi:$(date +%s)
+    - name: Build Catalog Api Docker image
+      run: docker build . --file src/CatalogApi/Dockerfile --tag catalogapi:$(date +%s)
 
-    - name: Build the Auth Api image
-      run: docker build . --file src/AuthApi/Dockerfile --tag authapi:$(date +%s)
+    - name: Build Identity Api Docker image
+      run: docker build . --file src/IdentityApi/Dockerfile --tag identityapi:$(date +%s)

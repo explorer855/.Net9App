@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AuthApi.Unit.Tests.Helpers.AsyncQueryProvider
+namespace IdentityApi.Unit.Tests.Helpers.AsyncQueryProvider
 {
     /// <summary>
     /// Class to create an asynchronous enumerator for testing purposes.
