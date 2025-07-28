@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IdentityApi\IdentityApi.csproj" />
+    <ProjectReference Include="..\..\src\IdentityApi\IdentityApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,20 +10,20 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
-COPY ["src/IdentityApi/IdentityApi.csproj", "src/IdentityApi/"]
+COPY ["src/OrdersApi/OrdersApi.csproj", "src/OrdersApi/"]
 COPY ["WebApi.ServiceDefaults/WebApi.ServiceDefaults.csproj", "WebApi.ServiceDefaults/"]
-RUN dotnet restore "./src/IdentityApi/IdentityApi.csproj"
+RUN dotnet restore "./src/OrdersApi/OrdersApi.csproj"
 COPY . .
-WORKDIR "/src/src/IdentityApi"
-RUN dotnet build --no-restore "./IdentityApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/src/OrdersApi"
+RUN dotnet build --no-restore "./OrdersApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish --no-restore "./IdentityApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish --no-restore "./OrdersApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "IdentityApi.dll"]
+ENTRYPOINT ["dotnet", "OrdersApi.dll"]
