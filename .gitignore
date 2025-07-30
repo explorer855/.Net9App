@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /AuthApi/appsettings.json
 /src/AuthApi/appsettings.json
 /src/WebApi/appsettings.json
+/src/OrdersApi/appsettings.json

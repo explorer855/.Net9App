@@ -10,6 +10,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MassTransit" />
+		<PackageReference Include="MassTransit.Extensions.DependencyInjection" />
+		<PackageReference Include="MassTransit.RabbitMQ" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
@@ -17,6 +20,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\WebApi.ServiceDefaults\WebApi.ServiceDefaults.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Controllers\" />
 	</ItemGroup>
 
 </Project>

@@ -25,11 +25,33 @@ services:
     build:
       context: .
       dockerfile: src/OrdersApi/Dockerfile
+    environment:
+       - RabbitMQ__Host=amqp://rabbitmq-queue:5672
+       - RabbitMQ__UserName=user
+       - RabbitMQ__Password=password
     ports:
       - "7002:80"
     networks:
       - backend-gateway
+    depends_on:
+      - rabbitmq_broker
+    
+   rabbitmq_broker:
+    image: rabbitmq:3-management
+    hostname: rabbitmq-queue
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+        RABBITMQ_DEFAULT_USER: user
+        RABBITMQ_DEFAULT_PASS: password
+    volumes:
+       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - backend-gateway     
 
+volumes:
+  rabbitmq_data:
 
 networks:
   backend-gateway: {}
