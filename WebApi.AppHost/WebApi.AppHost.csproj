@@ -18,6 +18,7 @@
     <ProjectReference Include="..\src\CatalogApi\CatalogApi.csproj" />
     <ProjectReference Include="..\src\IdentityApi\IdentityApi.csproj" />
     <ProjectReference Include="..\src\OrdersApi\OrdersApi.csproj" />
+    <ProjectReference Include="..\src\OutboxBackgroundApp\OutboxBackgroundApp.csproj" />
   </ItemGroup>
 
 </Project>
