@@ -1,8 +1,14 @@
 using MassTransit;
+using OrdersApi.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+bool isDockerEnabled = bool.TryParse(builder.Configuration["Docker:Enabled"], out bool result);
+
+if (!isDockerEnabled)
+{
+    builder.AddServiceDefaults();
+}
 
 // Add services to the container.
 
@@ -13,21 +19,7 @@ builder.Services.AddSwaggerGen();
 
 #region Plugin MassTransit
 
-builder.Services.AddMassTransit(options =>
-{
-    options.SetKebabCaseEndpointNameFormatter();
-
-    options.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host(new Uri(builder.Configuration["RabbitMQ:Host"]!), host =>
-        {
-            host.Username(builder.Configuration["RabbitMQ:Username"]!);
-            host.Password(builder.Configuration["RabbitMQ:Password"]!);
-        });
-
-        cfg.ConfigureEndpoints(context);
-    });
-});
+builder.AddMassTransitExtension();
 
 #endregion
 
@@ -50,4 +42,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

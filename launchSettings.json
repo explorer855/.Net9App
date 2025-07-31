@@ -8,7 +8,10 @@
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "catalogapi": "StartDebugging",
-        "identityapi": "StartDebugging"
+        "identityapi": "StartDebugging",
+        "ordersapi": "StartDebugging",
+        "outboxbackgroundapp": "StartDebugging",
+        "rabbitmq_broker": "StartWithoutDebugging"
       }
     }
   }

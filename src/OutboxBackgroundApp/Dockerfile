@@ -12,15 +12,17 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
 COPY ["src/OutboxBackgroundApp/OutboxBackgroundApp.csproj", "src/OutboxBackgroundApp/"]
+# Enable When .NET Aspire Container Orchestration is in use
+#COPY ["WebApi.ServiceDefaults/WebApi.ServiceDefaults.csproj", "WebApi.ServiceDefaults/"]
 RUN dotnet restore "./src/OutboxBackgroundApp/OutboxBackgroundApp.csproj"
 COPY . .
 WORKDIR "/src/src/OutboxBackgroundApp"
-RUN dotnet build --no-restore "./OutboxBackgroundApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./OutboxBackgroundApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish --no-restore "./OutboxBackgroundApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./OutboxBackgroundApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final

@@ -2,6 +2,7 @@ services:
 
    identityapi:
     image: ${DOCKER_REGISTRY-}identityapi
+    restart: always
     build:
       context: .
       dockerfile: src/IdentityApi/Dockerfile
@@ -12,6 +13,7 @@ services:
 
    catalogapi:
     image: ${DOCKER_REGISTRY-}catalogapi
+    restart: always
     build:
       context: .
       dockerfile: src/CatalogApi/Dockerfile
@@ -22,6 +24,7 @@ services:
 
    ordersapi:
     image: ${DOCKER_REGISTRY-}ordersapi
+    restart: always
     build:
       context: .
       dockerfile: src/OrdersApi/Dockerfile
@@ -29,6 +32,7 @@ services:
        - RabbitMQ__Host=amqp://rabbitmq-queue:5672
        - RabbitMQ__UserName=user
        - RabbitMQ__Password=password
+       - Docker__Enabled=true
     ports:
       - "7002:80"
     networks:
@@ -38,6 +42,7 @@ services:
     
    rabbitmq_broker:
     image: rabbitmq:3-management
+    restart: always
     hostname: rabbitmq-queue
     ports:
       - "5672:5672"
@@ -49,6 +54,27 @@ services:
        - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - backend-gateway     
+
+   outboxbackgroundapp:
+    image: ${DOCKER_REGISTRY-}outboxbackgroundapp
+    restart: always
+    build:
+      context: .
+      dockerfile: src/OutboxBackgroundApp/Dockerfile
+    environment:
+       - RabbitMQ__Host=amqp://rabbitmq-queue:5672
+       - RabbitMQ__UserName=user
+       - RabbitMQ__Password=password
+       - Docker__Enabled=true 
+    ports:
+      - "7003:80"
+    networks:
+      - backend-gateway
+    depends_on:
+      - rabbitmq_broker
+
+
+
 
 volumes:
   rabbitmq_data:
